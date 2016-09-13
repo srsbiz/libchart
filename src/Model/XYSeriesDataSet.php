@@ -31,11 +31,15 @@ class XYSeriesDataSet extends \Libchart\Model\DataSet {
 
 	/**
 	 * List of titles
+	 * 
+	 * @var string[]
 	 */
 	private $titleList;
 
 	/**
 	 * List of XYDataSet.
+	 *
+	 * @var \Libchart\Model\XYDataSet[]
 	 */
 	private $serieList;
 

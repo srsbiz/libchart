@@ -57,41 +57,48 @@ class Text {
 	 * @param bitfield text alignment
 	 */
 	public function printText($img, $px, $py, $color, $text, $fontFileName, $align = 0) {
-		if (!($align & $this->HORIZONTAL_CENTER_ALIGN) && !($align & $this->HORIZONTAL_RIGHT_ALIGN)) {
-			$align |= $this->HORIZONTAL_LEFT_ALIGN;
+		$lines = 0;
+		foreach(explode("\n", $text) as $txtLine) {
+			if (!($align & $this->HORIZONTAL_CENTER_ALIGN) && !($align & $this->HORIZONTAL_RIGHT_ALIGN)) {
+				$align |= $this->HORIZONTAL_LEFT_ALIGN;
+			}
+
+			if (!($align & $this->VERTICAL_CENTER_ALIGN) && !($align & $this->VERTICAL_BOTTOM_ALIGN)) {
+				$align |= $this->VERTICAL_TOP_ALIGN;
+			}
+
+			$fontSize = 8;
+			$lineSpacing = 1;
+
+			list ($llx, $lly, $lrx, $lry, $urx, $ury, $ulx, $uly) = imageftbbox($fontSize, 0, $fontFileName, $txtLine, array("linespacing" => $lineSpacing));
+
+			$textWidth = $lrx - $llx;
+			$textHeight = $lry - $ury;
+
+			$angle = 0;
+			
+			$py += $lines * $fontSize + ($lines == 1 ? 2 : 0);
+
+			if ($align & $this->HORIZONTAL_CENTER_ALIGN) {
+				$px -= $textWidth / 2;
+			}
+
+			if ($align & $this->HORIZONTAL_RIGHT_ALIGN) {
+				$px -= $textWidth;
+			}
+
+			if ($align & $this->VERTICAL_CENTER_ALIGN) {
+				$py += $textHeight / 2;
+			}
+
+			if ($align & $this->VERTICAL_TOP_ALIGN) {
+				$py += $textHeight;
+			}
+
+			imagettftext($img, $fontSize, $angle, $px, $py, $color->getColor($img), $fontFileName, $txtLine);
+			$lines++;
 		}
-
-		if (!($align & $this->VERTICAL_CENTER_ALIGN) && !($align & $this->VERTICAL_BOTTOM_ALIGN)) {
-			$align |= $this->VERTICAL_TOP_ALIGN;
-		}
-
-		$fontSize = 8;
-		$lineSpacing = 1;
-
-		list ($llx, $lly, $lrx, $lry, $urx, $ury, $ulx, $uly) = imageftbbox($fontSize, 0, $fontFileName, $text, array("linespacing" => $lineSpacing));
-
-		$textWidth = $lrx - $llx;
-		$textHeight = $lry - $ury;
-
-		$angle = 0;
-
-		if ($align & $this->HORIZONTAL_CENTER_ALIGN) {
-			$px -= $textWidth / 2;
-		}
-
-		if ($align & $this->HORIZONTAL_RIGHT_ALIGN) {
-			$px -= $textWidth;
-		}
-
-		if ($align & $this->VERTICAL_CENTER_ALIGN) {
-			$py += $textHeight / 2;
-		}
-
-		if ($align & $this->VERTICAL_TOP_ALIGN) {
-			$py += $textHeight;
-		}
-
-		imagettftext($img, $fontSize, $angle, $px, $py, $color->getColor($img), $fontFileName, $text);
+		return $lines;
 	}
 
 	/**

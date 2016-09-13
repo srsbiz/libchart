@@ -114,7 +114,7 @@ class Palette {
 	/**
 	 * Set the colors for the axis.
 	 *
-	 * @param colors Array of Color
+	 * @param Color[] $colors Array of Color
 	 */
 	public function setAxisColor($colors) {
 		$this->axisColor = $colors;
@@ -123,7 +123,7 @@ class Palette {
 	/**
 	 * Set the colors for the background.
 	 *
-	 * @param colors Array of Color
+	 * @param Color[] $colors Array of Color
 	 */
 	public function setBackgroundColor($colors) {
 		$this->backgroundColor = $colors;
@@ -132,28 +132,31 @@ class Palette {
 	/**
 	 * Set the colors for the bar charts.
 	 *
-	 * @param colors Array of Color
+	 * @param Color[] $colors Array of Color
+	 * @param float $shadowFactor
 	 */
-	public function setBarColor($colors) {
-		$this->barColorSet = new \Libchart\View\Color\ColorSet($colors, 0.75);
+	public function setBarColor($colors, $shadowFactor = 0.75) {
+		$this->barColorSet = new \Libchart\View\Color\ColorSet($colors, $shadowFactor);
 	}
 
 	/**
 	 * Set the colors for the line charts.
 	 *
-	 * @param colors Array of Color
+	 * @param Color[] $colors Array of Color
+	 * @param float $shadowFactor
 	 */
-	public function setLineColor($colors) {
-		$this->lineColorSet = new \Libchart\View\Color\ColorSet($colors, 0.75);
+	public function setLineColor($colors, $shadowFactor = 0.75) {
+		$this->lineColorSet = new \Libchart\View\Color\ColorSet($colors, $shadowFactor);
 	}
 
 	/**
 	 * Set the colors for the pie charts.
 	 *
-	 * @param colors Array of Color
+	 * @param Color[] $colors Array of Color
+	 * @param float $shadowFactor
 	 */
-	public function setPieColor($colors) {
-		$this->pieColorSet = new \Libchart\View\Color\ColorSet($colors, 0.7);
+	public function setPieColor($colors, $shadowFactor = 0.75) {
+		$this->pieColorSet = new \Libchart\View\Color\ColorSet($colors, $shadowFactor);
 	}
 
 }

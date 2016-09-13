@@ -34,8 +34,8 @@ class ColorSet {
 	/**
 	 * ColorSet constructor.
 	 *
+	 * @param $colorList Colors as an array
 	 * @param $shadowFactor Shadow factor
-	 * @param $colorArray Colors as an array
 	 */
 	public function __construct($colorList, $shadowFactor) {
 		$this->colorList = $colorList;

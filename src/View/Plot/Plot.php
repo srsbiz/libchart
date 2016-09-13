@@ -52,6 +52,10 @@ namespace Libchart\View\Plot;
  */
 class Plot {
 
+	const IMAGE_PRINT_BORDER_NONE = 0;
+	const IMAGE_PRINT_BORDER_OUTPUT_AREA = 1;
+	const IMAGE_PRINT_BORDER_IMAGE_AREA = 2;
+	
 	// Style properties
 	protected $title;
 
@@ -107,6 +111,7 @@ class Plot {
 
 	/**
 	 * Coordinates of the graph area.
+	 * @var \Libchart\View\Primitive\Rectangle
 	 */
 	protected $graphArea;
 
@@ -117,28 +122,45 @@ class Plot {
 
 	/**
 	 * Coordinates of the caption area.
+	 * @var \Libchart\View\Primitive\Rectangle
 	 */
 	protected $captionArea;
 
 	/**
 	 * Text writer.
+	 * @var \Libchart\View\Text\Text
 	 */
 	protected $text;
 
 	/**
 	 * Color palette.
+	 * @var \Libchart\View\Color\Palette
 	 */
 	protected $palette;
 
 	/**
 	 * Label generator.
+	 * @var \Libchart\View\Label\LabelGenerator
 	 */
 	protected $labelGenerator;
 
 	/**
 	 * GD image
+	 * @var resource GD
 	 */
 	protected $img;
+	
+	/**
+	 * Determine if 
+	 * @var int 
+	 */
+	protected $printImageBorder = 0;
+	
+	/**
+	 * Border color
+	 * @var int[3] R,G,B (0-255)
+	 */
+	protected $imageBorderColor = [];
 
 	/**
 	 * Drawing primitives
@@ -153,7 +175,8 @@ class Plot {
 	 * @param integer width of the image
 	 * @param integer height of the image
 	 */
-	public function __construct($width, $height) {
+	public function __construct($width = 600, $height = 300, $outerPadding = 5, $titlePadding = 5, $titleHeight = 26, 
+		$graphCaptionRatio = 0.5, $graphPadding = 50, $captionPadding = 15) {
 		$this->width = $width;
 		$this->height = $height;
 
@@ -163,13 +186,13 @@ class Plot {
 
 		// Default layout
 		$this->outputArea = new \Libchart\View\Primitive\Rectangle(0, 0, $width - 1, $height - 1);
-		$this->outerPadding = new \Libchart\View\Primitive\Padding(5);
-		$this->titleHeight = 26;
-		$this->titlePadding = new \Libchart\View\Primitive\Padding(5);
+		$this->outerPadding = new \Libchart\View\Primitive\Padding($outerPadding);
+		$this->titleHeight = $titleHeight;
+		$this->titlePadding = new \Libchart\View\Primitive\Padding($titlePadding);
 		$this->hasCaption = false;
-		$this->graphCaptionRatio = 0.50;
-		$this->graphPadding = new \Libchart\View\Primitive\Padding(50);
-		$this->captionPadding = new \Libchart\View\Primitive\Padding(15);
+		$this->graphCaptionRatio = $graphCaptionRatio;
+		$this->graphPadding = new \Libchart\View\Primitive\Padding($graphPadding);
+		$this->captionPadding = new \Libchart\View\Primitive\Padding($captionPadding);
 	}
 
 	/**
@@ -247,7 +270,15 @@ class Plot {
 		// White background
 		imagefilledrectangle($this->img, 0, 0, $this->width - 1, $this->height - 1, $this->backGroundColor->getColor($this->img));
 
-		//imagerectangle($this->img, $this->imageArea->x1, $this->imageArea->y1, $this->imageArea->x2, $this->imageArea->y2, $this->palette->red->getColor($this->img));
+		if ($this->printImageBorder) {
+			$color = imagecolorallocate($this->img, $this->imageBodrerColor[0], $this->imageBodrerColor[1], $this->imageBodrerColor[2]);
+
+			if ($this->printImageBorder == self::IMAGE_PRINT_BORDER_OUTPUT_AREA) {
+				imagerectangle($this->img, 0, 0, $this->width - 1, $this->height - 1, $color);
+			} elseif ($this->printImageBorder == self::IMAGE_PRINT_BORDER_IMAGE_AREA) {
+				imagerectangle($this->img, $this->imageArea->x1, $this->imageArea->y1, $this->imageArea->x2, $this->imageArea->y2, $color);
+			}
+		}
 	}
 
 	/**
@@ -262,24 +293,22 @@ class Plot {
 	 * Print the logo image to the image.
 	 */
 	public function printLogo() {
-		@$logoImage = imageCreateFromPNG($this->logoFileName);
+		if ($this->logoFileName) {
+			$logoImage = @imageCreateFromString(file_get_contents($this->logoFileName));
 
-		if ($logoImage) {
-			imagecopymerge($this->img, $logoImage, 2 * $this->outerPadding->left, $this->outerPadding->top, 0, 0, imagesx($logoImage), imagesy($logoImage), 100);
+			if ($logoImage) {
+				imagecopymerge($this->img, $logoImage, 2 * $this->outerPadding->left, $this->outerPadding->top, 0, 0, imagesx($logoImage), imagesy($logoImage), 100);
+			}
 		}
 	}
 
 	/**
 	 * Renders to a file or to standard output.
 	 *
-	 * @param fileName File name (optional)
+	 * @param string $fileName File name (optional)
 	 */
-	public function render($fileName) {
-		if (isset($fileName)) {
-			imagepng($this->img, $fileName);
-		} else {
-			imagepng($this->img);
-		}
+	public function render($fileName = null) {		
+		imagepng($this->img, $fileName);		
 	}
 
 	/**
@@ -289,15 +318,17 @@ class Plot {
 	 */
 	public function setTitle($title) {
 		$this->title = $title;
+		return $this;
 	}
 
 	/**
 	 * Sets the logo image file name.
 	 *
-	 * @param string New logo image file name
+	 * @param string $logoFileName New logo image file name or null to skip printig logo
 	 */
 	public function setLogoFileName($logoFileName) {
 		$this->logoFileName = $logoFileName;
+		return $this;
 	}
 
 	/**
@@ -312,7 +343,7 @@ class Plot {
 	/**
 	 * Return the palette.
 	 *
-	 * @return palette
+	 * @return \Libchart\View\Color\Palette
 	 */
 	public function getPalette() {
 		return $this->palette;
@@ -321,7 +352,7 @@ class Plot {
 	/**
 	 * Return the text.
 	 *
-	 * @return text
+	 * @return \Libchart\View\Text\Text
 	 */
 	public function getText() {
 		return $this->text;
@@ -352,6 +383,7 @@ class Plot {
 	 */
 	public function setOuterPadding($outerPadding) {
 		$this->outerPadding = $outerPadding;
+		return $this;
 	}
 
 	/**
@@ -361,6 +393,7 @@ class Plot {
 	 */
 	public function setTitleHeight($titleHeight) {
 		$this->titleHeight = $titleHeight;
+		return $this;
 	}
 
 	/**
@@ -370,6 +403,7 @@ class Plot {
 	 */
 	public function setTitlePadding($titlePadding) {
 		$this->titlePadding = $titlePadding;
+		return $this;
 	}
 
 	/**
@@ -379,6 +413,7 @@ class Plot {
 	 */
 	public function setGraphPadding($graphPadding) {
 		$this->graphPadding = $graphPadding;
+		return $this;
 	}
 
 	/**
@@ -388,6 +423,7 @@ class Plot {
 	 */
 	public function setHasCaption($hasCaption) {
 		$this->hasCaption = $hasCaption;
+		return $this;
 	}
 
 	/**
@@ -397,6 +433,7 @@ class Plot {
 	 */
 	public function setCaptionPadding($captionPadding) {
 		$this->captionPadding = $captionPadding;
+		return $this;
 	}
 
 	/**
@@ -406,12 +443,13 @@ class Plot {
 	 */
 	public function setGraphCaptionRatio($graphCaptionRatio) {
 		$this->graphCaptionRatio = $graphCaptionRatio;
+		return $this;
 	}
 
 	/**
 	 * Return the label generator.
 	 *
-	 * @return Label generator
+	 * @return \Libchart\View\Label\LabelGenerator Label generator
 	 */
 	public function getLabelGenerator() {
 		return $this->labelGenerator;
@@ -420,7 +458,7 @@ class Plot {
 	/**
 	 * Set the label generator.
 	 *
-	 * @param \Libchart\View\Label\LabelGenerator Label generator
+	 * @param \Libchart\View\Label\LabelGenerator $labelGenerator Label generator
 	 */
 	public function setLabelGenerator($labelGenerator) {
 		$this->labelGenerator = $labelGenerator;
@@ -429,7 +467,7 @@ class Plot {
 	/**
 	 * Return the graph area.
 	 *
-	 * @return graph area
+	 * @return \Libchart\View\Primitive\Rectangle graph area
 	 */
 	public function getGraphArea() {
 		return $this->graphArea;
@@ -438,7 +476,7 @@ class Plot {
 	/**
 	 * Return the caption area.
 	 *
-	 * @return caption area
+	 * @return \Libchart\View\Primitive\Rectangle caption area
 	 */
 	public function getCaptionArea() {
 		return $this->captionArea;
@@ -451,6 +489,15 @@ class Plot {
 	 */
 	public function getTextColor() {
 		return $this->textColor;
+	}
+	
+	/**
+	 * 
+	 * @param int $printImageBorder self::IMAGE_PRINT_BORDER_*
+	 */
+	public function setPrintImageBorder($printImageBorder) {
+		$this->printImageBorder = $printImageBorder;
+		return $this;
 	}
 
 }
