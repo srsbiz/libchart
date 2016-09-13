@@ -17,6 +17,6 @@
 		}
 	],
 	"autoload": {
-		"psr-0": { "Libchart\\": "libchart/"}
+		"psr-4": { "Libchart\\": "src/"}
 	}
 }

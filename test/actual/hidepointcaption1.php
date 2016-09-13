@@ -1,18 +1,18 @@
 <?php
-    require_once '../common.php';
 
-    header("Content-type: image/png");
+require_once '../common.php';
 
-    $chart = new \Libchart\View\Chart\PieChart();
+header("Content-type: image/png");
 
-    $chart->getConfig()->setShowPointCaption(false);
+$chart = new \Libchart\View\Chart\PieChart();
 
-    $dataSet = new \Libchart\Model\XYDataSet();
-    $dataSet->addPoint(new \Libchart\Model\Point("Some part", 20));
-    $dataSet->addPoint(new \Libchart\Model\Point("Another part", 35));
-    $dataSet->addPoint(new \Libchart\Model\Point("Biggest part", 70));
-    $chart->setDataSet($dataSet);
+$chart->getConfig()->setShowPointCaption(false);
 
-    $chart->setTitle("This is a pie");
-    $chart->render();
-?>
+$dataSet = new \Libchart\Model\XYDataSet();
+$dataSet->addPoint(new \Libchart\Model\Point("Some part", 20));
+$dataSet->addPoint(new \Libchart\Model\Point("Another part", 35));
+$dataSet->addPoint(new \Libchart\Model\Point("Biggest part", 70));
+$chart->setDataSet($dataSet);
+
+$chart->setTitle("This is a pie");
+$chart->render();
