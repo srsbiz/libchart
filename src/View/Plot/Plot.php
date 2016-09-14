@@ -158,9 +158,9 @@ class Plot {
 	
 	/**
 	 * Border color
-	 * @var int[3] R,G,B (0-255)
+	 * @var \Libchart\View\Color\Color
 	 */
-	protected $imageBorderColor = [];
+	protected $imageBorderColor;
 
 	/**
 	 * Drawing primitives
@@ -193,6 +193,8 @@ class Plot {
 		$this->graphCaptionRatio = $graphCaptionRatio;
 		$this->graphPadding = new \Libchart\View\Primitive\Padding($graphPadding);
 		$this->captionPadding = new \Libchart\View\Primitive\Padding($captionPadding);
+		
+		$this->imageBorderColor = new \Libchart\View\Color\Color(0x66, 0x66, 0x66);
 	}
 
 	/**
@@ -271,8 +273,7 @@ class Plot {
 		imagefilledrectangle($this->img, 0, 0, $this->width - 1, $this->height - 1, $this->backGroundColor->getColor($this->img));
 
 		if ($this->printImageBorder) {
-			$color = imagecolorallocate($this->img, $this->imageBodrerColor[0], $this->imageBodrerColor[1], $this->imageBodrerColor[2]);
-
+			$color = $this->imageBorderColor->getColor($this->img);
 			if ($this->printImageBorder == self::IMAGE_PRINT_BORDER_OUTPUT_AREA) {
 				imagerectangle($this->img, 0, 0, $this->width - 1, $this->height - 1, $color);
 			} elseif ($this->printImageBorder == self::IMAGE_PRINT_BORDER_IMAGE_AREA) {
@@ -497,6 +498,28 @@ class Plot {
 	 */
 	public function setPrintImageBorder($printImageBorder) {
 		$this->printImageBorder = $printImageBorder;
+		return $this;
+	}
+	
+	/**
+	 * Set border color
+	 * @param int $red
+	 * @param int $green
+	 * @param int $blue
+	 * @return \Libchart\View\Plot\Plot
+	 */
+	public function setImageBorderColorRGB($red = 0, $green = 0, $blue = 0) {
+		$this->imageBorderColor = new \Libchart\View\Color\Color($red, $green, $blue);
+		return $this;
+	}
+
+	/**
+	 * 
+	 * @param \Libchart\View\Color\Color $color
+	 * @return \Libchart\View\Plot\Plot
+	 */
+	public function setImageBorderColor(\Libchart\View\Color\Color $color) {
+		$this->imageBorderColor = $color;
 		return $this;
 	}
 

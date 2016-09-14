@@ -29,6 +29,12 @@ class PieChart extends \Libchart\View\Chart\Chart {
 
 	protected $pieCenterX;
 	protected $pieCenterY;
+	
+	/**
+	 * Draw aqualike background under graph
+	 * @var boolean 
+	 */
+	private $drawGraphBackground = true;
 
 	/**
 	 * Constructor of a pie chart.
@@ -36,9 +42,28 @@ class PieChart extends \Libchart\View\Chart\Chart {
 	 * @param integer width of the image
 	 * @param integer height of the image
 	 */
-	public function __construct($width = 600, $height = 250) {
+	public function __construct($width = 600, $height = 250, $drawGraphBackground = true) {
 		parent::__construct($width, $height);
-		$this->plot->setGraphPadding(new \Libchart\View\Primitive\Padding(15, 10, 30, 30));
+		$this->plot->setGraphPadding(new \Libchart\View\Primitive\Padding(15, 10, 30, 30));		
+		$this->drawGraphBackground = $drawGraphBackground;
+	}
+
+	/**
+	 * 
+	 * @return boolean
+	 */
+	public function getDrawGraphBackground() {
+		return $this->drawGraphBackground;
+	}
+
+	/**
+	 * 
+	 * @param boolean $drawGraphBackground
+	 * @return \Libchart\Model\ChartConfig
+	 */
+	public function setDrawGraphBackground($drawGraphBackground) {
+		$this->drawGraphBackground = $drawGraphBackground;
+		return $this;
 	}
 
 	/**
@@ -108,16 +133,18 @@ class PieChart extends \Libchart\View\Chart\Chart {
 		$palette = $this->plot->getPalette();
 		$primitive = $this->plot->getPrimitive();
 
-		// Get the graph area
-		$graphArea = $this->plot->getGraphArea();
+		if ($this->getDrawGraphBackground()) {
+			// Get the graph area
+			$graphArea = $this->plot->getGraphArea();
 
-		// Legend box
-		$primitive->outlinedBox($graphArea->x1, $graphArea->y1, $graphArea->x2, $graphArea->y2, $palette->axisColor[0], $palette->axisColor[1]);
+			// Legend box
+			$primitive->outlinedBox($graphArea->x1, $graphArea->y1, $graphArea->x2, $graphArea->y2, $palette->axisColor[0], $palette->axisColor[1]);
 
-		// Aqua-like background
-		for ($i = $graphArea->y1 + 2; $i < $graphArea->y2 - 1; $i++) {
-			$color = $palette->backgroundColor[($i + 3) % 4];
-			$primitive->line($graphArea->x1 + 2, $i, $graphArea->x2 - 2, $i, $color);
+			// Aqua-like background
+			for ($i = $graphArea->y1 + 2; $i < $graphArea->y2 - 1; $i++) {
+				$color = $palette->backgroundColor[($i + 3) % 4];
+				$primitive->line($graphArea->x1 + 2, $i, $graphArea->x2 - 2, $i, $color);
+			}
 		}
 	}
 

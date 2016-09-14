@@ -51,27 +51,28 @@ class ChartConfig {
 	/**
 	 * Creates a new ChartConfig with default options.
 	 */
-	public function __construct() {
-		$this->useMultipleColor = false;
-		$this->showPointCaption = true;
-		$this->sortDataPoint = true;
+	public function __construct($useMultipleColor = false, $showPointCaption = true, $sortDataPoint = true) {
+		$this->useMultipleColor = $useMultipleColor;
+		$this->showPointCaption = $showPointCaption;
+		$this->sortDataPoint = $sortDataPoint;
 	}
 
 	/**
 	 * If true the chart will use several colors for a single data set chart
 	 * (as if it was a multiple data set).
 	 * 
-	 * @param $useMultipleColor Use several colors : boolean
+	 * @param boolean $useMultipleColor Use several colors
 	 */
 	public function setUseMultipleColor($useMultipleColor) {
 		$this->useMultipleColor = $useMultipleColor;
+		return $this;
 	}
 
 	/**
 	 * If true the chart will use several colors for a single data set chart
 	 * (as if it was a multiple data set).
 	 * 
-	 * @return $useMultipleColor Use several colors : boolean
+	 * @return boolean Use several colors
 	 */
 	public function getUseMultipleColor() {
 		return $this->useMultipleColor;
@@ -80,16 +81,17 @@ class ChartConfig {
 	/**
 	 * Set the option to show caption on individual data points.
 	 * 
-	 * @param $showPointCaption Show caption on individual data points : boolean
+	 * @param boolean $showPointCaption Show caption on individual data points
 	 */
 	public function setShowPointCaption($showPointCaption) {
 		$this->showPointCaption = $showPointCaption;
+		return $this;
 	}
 
 	/**
 	 * Get the option to show caption on individual data points.
 	 * 
-	 * @return Show caption on individual data points : boolean
+	 * @return boolean Show caption on individual data points
 	 */
 	public function getShowPointCaption() {
 		return $this->showPointCaption;
@@ -98,16 +100,17 @@ class ChartConfig {
 	/**
 	 * Set the option to sort data points (only pie charts).
 	 * 
-	 * @param $sortDataPoint Sort data points : boolean
+	 * @param boolean $sortDataPoint Sort data points
 	 */
 	public function setSortDataPoint($sortDataPoint) {
 		$this->sortDataPoint = $sortDataPoint;
+		return $this;
 	}
 
 	/**
 	 * Get the option to sort data points (only pie charts).
 	 * 
-	 * @return Sort data points : boolean
+	 * @return boolean Sort data points
 	 */
 	public function getSortDataPoint() {
 		return $this->sortDataPoint;

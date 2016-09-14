@@ -36,6 +36,7 @@ abstract class Chart {
 
 	/**
 	 * The chart configuration.
+	 * @var \Libchart\Model\ChartConfig
 	 */
 	protected $config;
 
@@ -82,6 +83,7 @@ abstract class Chart {
 	 */
 	protected function createImage() {
 		$this->plot->createImage();
+		return $this;
 	}
 
 	/**
@@ -91,12 +93,13 @@ abstract class Chart {
 	 */
 	public function setDataSet($dataSet) {
 		$this->dataSet = $dataSet;
+		return $this;
 	}
 
 	/**
 	 * Return the chart configuration.
 	 *
-	 * @return configuration : ChartConfig
+	 * @return \Libchart\Model\ChartConfig configuration
 	 */
 	public function getConfig() {
 		return $this->config;
@@ -105,7 +108,7 @@ abstract class Chart {
 	/**
 	 * Return the plot.
 	 *
-	 * @return plot
+	 * @return \Libchart\View\Plot\Plot
 	 */
 	public function getPlot() {
 		return $this->plot;
@@ -118,6 +121,7 @@ abstract class Chart {
 	 */
 	public function setTitle($title) {
 		$this->plot->setTitle($title);
+		return $this;
 	}
 
 }
